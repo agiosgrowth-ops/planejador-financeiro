@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Planejador Financeiro</title>
 <link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
@@ -38,7 +41,7 @@
    BASE RESET & LAYOUT
 ═══════════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;transition:background .2s,color .2s}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;transition:background .2s,color .2s}
 .hidden{display:none!important}
 input,button,select,textarea{font-family:inherit}
 
@@ -103,8 +106,12 @@ input,button,select,textarea{font-family:inherit}
 
 /* Topbar */
 .topbar{background:var(--card);border-bottom:1px solid var(--bdr);padding:0 16px;display:flex;align-items:center;gap:10px;height:52px;position:sticky;top:0;z-index:50}
-.topbar-logo{font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap}
-.topbar-logo span{color:#a3e06a}
+.topbar-logo{font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap;display:flex;align-items:center;gap:8px}
+.topbar-logo span{color:var(--txt)}
+.logo-badge{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#a3e06a,#6fcf97);display:flex;align-items:center;justify-content:center;color:#0f1117;font-size:16px;flex-shrink:0}
+.topbar-salary{display:flex;align-items:center;gap:8px;background:var(--inp);border:1px solid var(--bdr2);border-radius:9px;padding:5px 10px;flex-shrink:0}
+.topbar-salary-label{font-size:10px;color:var(--txt2);white-space:nowrap;display:flex;align-items:center;gap:4px;font-weight:500}
+.topbar-salary-input{background:transparent;border:none;color:var(--txt);font-size:13px;font-weight:700;width:80px;outline:none}
 .topbar-chips{display:flex;gap:6px;flex:1;overflow-x:auto;scrollbar-width:none}
 .topbar-chips::-webkit-scrollbar{display:none}
 .chip{background:var(--inp);border:1px solid var(--bdr2);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--txt2);white-space:nowrap}
@@ -165,13 +172,17 @@ input,button,select,textarea{font-family:inherit}
 .total-val{font-size:14px;font-weight:700}
 
 /* Category tabs (saídas) */
-.cat-tabs{display:flex;gap:4px;margin-bottom:12px}
-.cat-tab{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--bdr2);background:var(--inp);color:var(--txt2);transition:all .15s}
-.cat-tab.active{background:rgba(240,128,128,.15);border-color:rgba(240,128,128,.4);color:#f08080}
+.cat-tabs{display:flex;gap:18px;margin-bottom:16px;border-bottom:1px solid var(--bdr);padding-bottom:0}
+.cat-tab{padding:0 2px 10px;font-size:14px;font-weight:600;cursor:pointer;border:none;border-bottom:2.5px solid transparent;background:transparent;color:var(--txt3);transition:all .15s;display:flex;align-items:center;gap:6px;margin-bottom:-1px}
+.cat-tab i{font-size:16px}
+.cat-tab:hover{color:var(--txt2)}
+.cat-tab.active{color:var(--cat-color);border-bottom-color:var(--cat-color)}
 
 /* Painel */
 .painel-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.stat-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px}
+.stat-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px}
+.stat-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.stat-body{min-width:0}
 .stat-label{font-size:11px;color:var(--txt2);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
 .stat-val{font-size:22px;font-weight:700}
 .stat-sub{font-size:11px;color:var(--txt2);margin-top:4px}
@@ -187,10 +198,25 @@ input,button,select,textarea{font-family:inherit}
 .meta-bar{background:#a3e06a;height:100%;border-radius:4px;transition:width .4s}
 .meta-bar.over{background:#e05252}
 .divisao-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
-.div-cell{background:var(--inp);border-radius:8px;padding:10px;text-align:center}
-.div-name{font-size:11px;color:var(--txt2);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.div-val{font-size:14px;font-weight:700;color:#a3e06a}
+.div-cell{background:var(--inp);border-radius:8px;padding:10px;text-align:left}
+.div-name{font-size:12px;color:var(--txt);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.div-val{font-size:14px;font-weight:700;color:#a3e06a;margin-bottom:6px}
 .div-pct{font-size:11px;color:var(--txt3)}
+.div-bar-wrap{background:var(--inp2);border-radius:4px;height:5px;overflow:hidden;margin-bottom:6px}
+.div-bar{height:100%;border-radius:4px;transition:width .4s}
+.div-dest{font-size:10px;color:var(--txt3);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Copy modal — category cards */
+.copy-cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 16px}
+.copy-cat-card{display:flex;align-items:center;gap:8px;border:1.5px solid var(--bdr2);background:var(--inp);border-radius:10px;padding:9px 10px;cursor:pointer;transition:all .15s;font-size:12.5px;font-weight:600;color:var(--txt2)}
+.copy-cat-card input{accent-color:currentColor;margin:0;flex-shrink:0}
+.copy-cat-card.checked{background:var(--cat-bg);border-color:var(--cat-color);color:var(--cat-color)}
+.copy-mode-group{display:flex;flex-direction:column;gap:8px;margin:4px 0 16px}
+.copy-mode-item{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--txt2);cursor:pointer}
+.copy-mode-item input{accent-color:#a3e06a;margin-top:2px}
+.copy-mode-item b{color:var(--txt);display:block;font-size:13px}
+.copy-mode-item small{color:var(--txt3);font-size:11px}
+.modal-section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--txt3);margin:14px 0 2px}
 
 /* Investimentos table */
 .inv-obs{font-size:11px;color:var(--txt2)}
@@ -373,7 +399,7 @@ input,button,select,textarea{font-family:inherit}
 <div id="authScreen" class="hidden">
   <div class="auth-box">
     <div class="auth-logo">
-      <div class="auth-logo-icon">💰</div>
+      <div class="auth-logo-icon"><i class="ti ti-wallet"></i></div>
       <h1>Planejador <span>Financeiro</span></h1>
       <p>Controle financeiro familiar e pessoal</p>
     </div>
@@ -437,8 +463,12 @@ input,button,select,textarea{font-family:inherit}
 <div id="mainApp">
   <!-- Topbar -->
   <div class="topbar">
-    <div class="topbar-logo">💰 <span>Planejador</span></div>
+    <div class="topbar-logo"><div class="logo-badge"><i class="ti ti-wallet"></i></div> <span>Planejador Financeiro</span></div>
     <div class="topbar-chips" id="topChips"></div>
+    <div class="topbar-salary">
+      <span class="topbar-salary-label"><i class="ti ti-calendar"></i> Salário base</span>
+      <input type="number" class="topbar-salary-input" id="topSalario" min="0" value="0" oninput="onTopSalarioChange(this)">
+    </div>
     <div class="topbar-actions">
       <div class="icon-btn" onclick="abrirCopiar()" title="Copiar mês"><i class="ti ti-copy"></i></div>
       <div class="icon-btn" onclick="document.getElementById('settingsModal').classList.remove('hidden')" title="Ferramentas"><i class="ti ti-settings"></i></div>
@@ -491,6 +521,28 @@ input,button,select,textarea{font-family:inherit}
     <div class="fg"><label class="fl">Meta mensal padrão (R$)</label><input class="fi2" id="cfgMeta" type="number" min="0"></div>
 
     <div style="margin-bottom:16px">
+      <div class="fl" style="margin-bottom:8px">Divisão de renda (%) — aplica a todos os meses do ano</div>
+      <div style="display:grid;grid-template-columns:1fr 70px;gap:6px;margin-bottom:6px">
+        <input class="fi2" id="cfgNome1" placeholder="Nome (ex: Essencial)">
+        <input class="fi2" id="cfgPct1" type="number" min="0" max="100" placeholder="%" oninput="atualizarDivTotal()">
+      </div>
+      <input class="fi2" id="cfgBanco1" placeholder="Banco/destino (opcional)" style="margin-bottom:10px">
+
+      <div style="display:grid;grid-template-columns:1fr 70px;gap:6px;margin-bottom:6px">
+        <input class="fi2" id="cfgNome2" placeholder="Nome (ex: Pessoal)">
+        <input class="fi2" id="cfgPct2" type="number" min="0" max="100" placeholder="%" oninput="atualizarDivTotal()">
+      </div>
+      <input class="fi2" id="cfgBanco2" placeholder="Banco/destino (opcional)" style="margin-bottom:10px">
+
+      <div style="display:grid;grid-template-columns:1fr 70px;gap:6px;margin-bottom:6px">
+        <input class="fi2" value="Reserva" disabled style="opacity:.6">
+        <input class="fi2" id="cfgPct3" type="number" min="0" max="100" placeholder="%" oninput="atualizarDivTotal()">
+      </div>
+      <input class="fi2" id="cfgBanco3" placeholder="Banco/destino (opcional)" style="margin-bottom:4px">
+      <div id="cfgDivTotal" style="font-size:11px;color:var(--txt3);margin-top:2px"></div>
+    </div>
+
+    <div style="margin-bottom:16px">
       <div class="fl" style="margin-bottom:8px">Tema visual</div>
       <div class="theme-grid">
         <div class="theme-btn" onclick="aplicarTema('dark')" id="temaBtn_dark">
@@ -518,13 +570,37 @@ input,button,select,textarea{font-family:inherit}
 <!-- Copy months modal -->
 <div class="modal-overlay hidden" id="copiarModal">
   <div class="modal-box">
-    <div class="modal-title">Copiar mês</div>
-    <div class="modal-sub">Copie as entradas do mês atual para outros meses.</div>
-    <div class="fl" style="margin-bottom:8px">Destino</div>
+    <div class="modal-title"><i class="ti ti-copy"></i> Copiar dados para outros meses</div>
+    <div class="modal-sub" id="copiarSub">Selecione o que copiar e para quais meses aplicar.</div>
+
+    <div class="modal-section-label">O que copiar</div>
+    <div class="copy-cat-grid" id="copiarCats"></div>
+
+    <div class="modal-section-label">Como copiar</div>
+    <div class="copy-mode-group" id="copiarModo">
+      <label class="copy-mode-item"><input type="radio" name="copiarModo" value="texto"><span><b>Apenas textos</b><br><small>Leva só os nomes/descrições, zera os valores</small></span></label>
+      <label class="copy-mode-item"><input type="radio" name="copiarModo" value="ambos" checked><span><b>Textos e dados</b><br><small>Copia tudo — nomes e valores (substitui o que existir)</small></span></label>
+      <label class="copy-mode-item"><input type="radio" name="copiarModo" value="dados"><span><b>Apenas dados</b><br><small>Mantém os nomes do mês destino, só atualiza os valores</small></span></label>
+    </div>
+
+    <div class="modal-section-label">Copiar para quais meses</div>
     <div class="month-checks" id="copiarChecks"></div>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn-primary" style="flex:1" onclick="executarCopia()"><i class="ti ti-copy"></i> Copiar</button>
-      <button class="btn-ghost" style="flex:1" onclick="document.getElementById('copiarModal').classList.add('hidden')">Cancelar</button>
+
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn-ghost" style="flex:1;margin-top:0" onclick="document.getElementById('copiarModal').classList.add('hidden')">Cancelar</button>
+      <button class="btn-primary" style="flex:1" onclick="executarCopia()"><i class="ti ti-copy"></i> Copiar agora</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirmation modal -->
+<div class="modal-overlay hidden" id="confirmDelModal">
+  <div class="modal-box" style="max-width:360px">
+    <div class="modal-title"><i class="ti ti-alert-triangle" style="color:#e05252"></i> Excluir item</div>
+    <div class="modal-sub" style="margin-bottom:16px">Tem certeza que deseja excluir este item? Esta ação não pode ser desfeita.</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-ghost" style="flex:1;margin-top:0" onclick="cancelDelItem()">Cancelar</button>
+      <button class="btn-danger" style="flex:1;margin-top:0" onclick="confirmDelItem()"><i class="ti ti-trash"></i> Excluir</button>
     </div>
   </div>
 </div>
@@ -812,6 +888,17 @@ function agendarSalvar(){
   _saveTimer=setTimeout(salvarMes,1200);
 }
 
+var _salarioTimer=null;
+function onTopSalarioChange(el){
+  var v=parseFloat(el.value)||0;
+  perfil.renda=v;
+  clearTimeout(_salarioTimer);
+  _salarioTimer=setTimeout(async function(){
+    await _sb.from('profiles').upsert({id:_user.id,nome:perfil.nome,renda:v,meta_padrao:perfil.metaPadrao,salario_base:v,updated_at:new Date().toISOString()});
+    renderAll();
+  },900);
+}
+
 function setSyncStatus(s){
   var dot=document.getElementById('syncDot');
   var txt=document.getElementById('syncTxt');
@@ -845,13 +932,53 @@ async function salvarSetup(){
   mostrarApp();
 }
 
+function atualizarDivTotal(){
+  var p1=parseFloat(document.getElementById('cfgPct1').value)||0;
+  var p2=parseFloat(document.getElementById('cfgPct2').value)||0;
+  var p3=parseFloat(document.getElementById('cfgPct3').value)||0;
+  var soma=p1+p2+p3;
+  var el=document.getElementById('cfgDivTotal');
+  el.textContent='Soma: '+soma+'%'+(soma===100?' ✓':' — precisa somar 100%');
+  el.style.color=soma===100?'#a3e06a':'#e05252';
+}
+
 async function salvarSettings(){
   var nome=(document.getElementById('cfgNome').value||'').trim();
   var renda=parseFloat(document.getElementById('cfgRenda').value)||0;
   var meta=parseFloat(document.getElementById('cfgMeta').value)||0;
   if(!nome){showToast('Nome é obrigatório.');return;}
+
+  var div={
+    pct1:parseFloat(document.getElementById('cfgPct1').value)||0,
+    pct2:parseFloat(document.getElementById('cfgPct2').value)||0,
+    pct3:parseFloat(document.getElementById('cfgPct3').value)||0,
+    nome1:document.getElementById('cfgNome1').value||'Essencial',
+    nome2:document.getElementById('cfgNome2').value||'Pessoal',
+    nome3:'Reserva',
+    banco1:document.getElementById('cfgBanco1').value||'',
+    banco2:document.getElementById('cfgBanco2').value||'',
+    banco3:document.getElementById('cfgBanco3').value||''
+  };
+  var somaPct=div.pct1+div.pct2+div.pct3;
+  if(somaPct!==100){showToast('A soma das porcentagens precisa ser 100% (está em '+somaPct+'%).');return;}
+
   await _sb.from('profiles').upsert({id:_user.id,nome:nome,renda:renda,meta_padrao:meta,updated_at:new Date().toISOString()});
   perfil.nome=nome;perfil.renda=renda;perfil.metaPadrao=meta;
+
+  var promises=[];
+  for(var m=0;m<12;m++){
+    if(!dados[m]) dados[m]={entradas:[],fixa:[],variavel:[],outros:[],investimentos:[],div:null,meta:{valor:0,descricao:''}};
+    dados[m].div=Object.assign({},div);
+    promises.push(_sb.from('monthly_data').upsert({
+      user_id:_user.id,ano:curAno,mes:m,
+      entradas:dados[m].entradas,fixa:dados[m].fixa,variavel:dados[m].variavel,
+      outros:dados[m].outros,investimentos:dados[m].investimentos,
+      divisao:dados[m].div,meta:dados[m].meta,
+      updated_at:new Date().toISOString()
+    },{onConflict:'user_id,ano,mes'}));
+  }
+  await Promise.all(promises);
+
   document.getElementById('settingsModal').classList.add('hidden');
   renderAll();
   showToast('Configurações salvas!');
@@ -939,6 +1066,20 @@ function renderAll(){
   document.getElementById('cfgNome').value=perfil.nome;
   document.getElementById('cfgRenda').value=perfil.renda||'';
   document.getElementById('cfgMeta').value=perfil.metaPadrao||'';
+  var topSal=document.getElementById('topSalario');
+  if(topSal&&document.activeElement!==topSal) topSal.value=perfil.renda||0;
+  var curDiv=(dados[curMes]&&dados[curMes].div)||{pct1:50,pct2:30,pct3:20,nome1:'Essencial',nome2:'Pessoal',banco1:'',banco2:'',banco3:''};
+  if(!document.activeElement||!document.activeElement.id||document.activeElement.id.indexOf('cfg')!==0){
+    document.getElementById('cfgNome1').value=curDiv.nome1||'Essencial';
+    document.getElementById('cfgPct1').value=curDiv.pct1||0;
+    document.getElementById('cfgBanco1').value=curDiv.banco1||'';
+    document.getElementById('cfgNome2').value=curDiv.nome2||'Pessoal';
+    document.getElementById('cfgPct2').value=curDiv.pct2||0;
+    document.getElementById('cfgBanco2').value=curDiv.banco2||'';
+    document.getElementById('cfgPct3').value=curDiv.pct3||0;
+    document.getElementById('cfgBanco3').value=curDiv.banco3||'';
+    atualizarDivTotal();
+  }
   // Sync theme buttons
   ['dark','light','ocean','forest'].forEach(function(n){
     var el=document.getElementById('temaBtn_'+n);
@@ -974,10 +1115,10 @@ function renderPainel(){
   var h='<div class="chart-wrap">';
   h+='<div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--txt2)">'+mesNome+'</div>';
   h+='<div class="painel-grid" style="margin-bottom:12px">';
-  h+=statCard('Entradas',fmtR(entTotal),'#a3e06a');
-  h+=statCard('Gastos Totais',fmtR(gasTotal),'#f08080');
-  h+=statCard('Investimentos',fmtR(inv),'#c4b5ff');
-  h+=statCard('Saldo',fmtR(saldo),saldo>=0?'#a3e06a':'#e05252');
+  h+=statCard('Entradas',fmtR(entTotal),'#a3e06a','ti-arrow-up-right');
+  h+=statCard('Gastos Totais',fmtR(gasTotal),'#f08080','ti-arrow-down-right');
+  h+=statCard('Investimentos',fmtR(inv),'#c4b5ff','ti-chart-line');
+  h+=statCard('Saldo',fmtR(saldo),saldo>=0?'#a3e06a':'#e05252','ti-wallet');
   h+='</div>';
 
   // Pie chart
@@ -1013,9 +1154,9 @@ function renderPainel(){
   var v3=(entTotal*(div.pct3||0)/100);
   h+='<div class="card"><div class="card-title">Divisão de renda</div>';
   h+='<div class="divisao-grid">';
-  h+=divCell(div.nome1||'Essencial',v1,div.pct1||0,div.banco1);
-  h+=divCell(div.nome2||'Pessoal',v2,div.pct2||0,div.banco2);
-  h+=divCell(div.nome3||'Reserva',v3,div.pct3||0,div.banco3);
+  h+=divCell(div.nome1||'Essencial',v1,div.pct1||0,div.banco1,'#4d9ef5');
+  h+=divCell(div.nome2||'Pessoal',v2,div.pct2||0,div.banco2,'#fbb040');
+  h+=divCell(div.nome3||'Reserva',v3,div.pct3||0,div.banco3,'#a3e06a');
   h+='</div></div>';
 
   document.getElementById('pageWrap').innerHTML=h;
@@ -1035,15 +1176,19 @@ function renderPainel(){
   }
 }
 
-function statCard(label,val,color){
-  return '<div class="stat-card"><div class="stat-label">'+label+'</div><div class="stat-val" style="color:'+color+'">'+val+'</div></div>';
+function statCard(label,val,color,icon){
+  var ic=icon||'ti-chart-bar';
+  return '<div class="stat-card"><div class="stat-icon" style="background:'+color+'22;color:'+color+'"><i class="ti '+ic+'"></i></div><div class="stat-body"><div class="stat-label">'+label+'</div><div class="stat-val" style="color:'+color+'">'+val+'</div></div></div>';
 }
 
-function divCell(nome,val,pct,banco){
+function divCell(nome,val,pct,banco,color){
+  var c=color||'#a3e06a';
   var h='<div class="div-cell">';
   h+='<div class="div-name">'+escHtml(nome)+'</div>';
-  h+='<div class="div-val">'+fmtR(val)+'</div>';
-  h+='<div class="div-pct">'+pct+'%'+(banco?' • '+escHtml(banco):'')+'</div>';
+  h+='<div class="div-bar-wrap"><div class="div-bar" style="width:'+Math.min(pct,100)+'%;background:'+c+'"></div></div>';
+  h+='<div class="div-val" style="color:'+c+'">'+fmtR(val)+'</div>';
+  h+='<div class="div-pct">'+pct+'%</div>';
+  if(banco) h+='<div class="div-dest">'+escHtml(banco)+'</div>';
   h+='</div>';
   return h;
 }
@@ -1083,7 +1228,11 @@ function renderEntradas(){
 //  RENDER: SAIDAS
 // ═══════════════════════════════════════════
 function renderSaidas(){
-  var catMap={fixa:{label:'Fixa',color:'#f08080'},variavel:{label:'Variável',color:'#fbb040'},outros:{label:'Outros',color:'#4d9ef5'}};
+  var catMap={
+    fixa:{label:'Contas fixas',color:'#f08080',icon:'ti-lock'},
+    variavel:{label:'Contas variáveis',color:'#fbb040',icon:'ti-repeat'},
+    outros:{label:'Outros gastos',color:'#4d9ef5',icon:'ti-dots-circle-horizontal'}
+  };
   var cat=curSaidaTab;
   var items=dados[curMes][cat]||[];
   var filtered=filtrarItens(items);
@@ -1101,7 +1250,7 @@ function renderSaidas(){
   h+='</div></div>';
   h+='<div class="cat-tabs">';
   ['fixa','variavel','outros'].forEach(function(c){
-    h+='<div class="cat-tab'+(c===cat?' active':'')+'" onclick="setCatSaida(\''+c+'\')">'+catMap[c].label+'</div>';
+    h+='<div class="cat-tab'+(c===cat?' active':'')+'" style="--cat-color:'+catMap[c].color+'" onclick="setCatSaida(\''+c+'\')"><i class="ti '+catMap[c].icon+'"></i>'+catMap[c].label+'</div>';
   });
   h+='</div>';
   h+=tblItens(filtered,cat,catMap[cat].color);
@@ -1253,8 +1402,21 @@ function addItem(tipo){
   },50);
 }
 
+var _pendingDel=null;
 function delItem(cat,id){
+  _pendingDel={cat:cat,id:id};
+  document.getElementById('confirmDelModal').classList.remove('hidden');
+}
+function cancelDelItem(){
+  _pendingDel=null;
+  document.getElementById('confirmDelModal').classList.add('hidden');
+}
+function confirmDelItem(){
+  if(!_pendingDel) return;
+  var cat=_pendingDel.cat, id=_pendingDel.id;
   dados[curMes][cat]=dados[curMes][cat].filter(function(i){return i.id!==id;});
+  _pendingDel=null;
+  document.getElementById('confirmDelModal').classList.add('hidden');
   renderAll();
   agendarSalvar();
 }
@@ -1293,25 +1455,77 @@ function setFiltro(v){
 // ═══════════════════════════════════════════
 //  COPY MONTHS
 // ═══════════════════════════════════════════
+var COPY_CATS=[
+  {key:'e',field:'entradas',label:'Entradas',color:'#a3e06a',icon:'ti-arrow-up-right'},
+  {key:'fixa',field:'fixa',label:'Contas fixas',color:'#f08080',icon:'ti-lock'},
+  {key:'variavel',field:'variavel',label:'Variáveis',color:'#fbb040',icon:'ti-repeat'},
+  {key:'outros',field:'outros',label:'Outros gastos',color:'#4d9ef5',icon:'ti-dots-circle-horizontal'},
+  {key:'inv',field:'investimentos',label:'Investimentos',color:'#c4b5ff',icon:'ti-chart-line'}
+];
+
 function abrirCopiar(){
+  var hc='';
+  COPY_CATS.forEach(function(c){
+    hc+='<label class="copy-cat-card" id="catCard_'+c.key+'" style="--cat-color:'+c.color+';--cat-bg:'+c.color+'1a" onclick="toggleCopyCat(this)">';
+    hc+='<input type="checkbox" value="'+c.key+'" checked style="color:'+c.color+'"> <i class="ti '+c.icon+'"></i> '+c.label;
+    hc+='</label>';
+  });
+  document.getElementById('copiarCats').innerHTML=hc;
+  document.querySelectorAll('#copiarCats .copy-cat-card').forEach(function(card){card.classList.add('checked');});
+
   var h='';
   MESES.forEach(function(m,i){
     if(i===curMes) return;
     h+='<label class="m-chk-item"><input type="checkbox" value="'+i+'"> '+MESES_SHORT[i]+'</label>';
   });
   document.getElementById('copiarChecks').innerHTML=h;
+  document.getElementById('copiarSub').textContent='Selecione o que copiar de '+MESES[curMes]+' e para quais meses aplicar.';
+  var modoAmbos=document.querySelector('#copiarModo input[value="ambos"]');
+  if(modoAmbos) modoAmbos.checked=true;
   document.getElementById('copiarModal').classList.remove('hidden');
 }
 
+function toggleCopyCat(card){
+  var chk=card.querySelector('input');
+  card.classList.toggle('checked',chk.checked);
+}
+
 async function executarCopia(){
-  var checks=document.querySelectorAll('#copiarChecks input:checked');
-  if(!checks.length){showToast('Selecione ao menos um mês.');return;}
+  var monthChecks=document.querySelectorAll('#copiarChecks input:checked');
+  if(!monthChecks.length){showToast('Selecione ao menos um mês de destino.');return;}
+  var catChecks=document.querySelectorAll('#copiarCats input:checked');
+  if(!catChecks.length){showToast('Selecione ao menos uma categoria para copiar.');return;}
+  var selectedCats=Array.prototype.map.call(catChecks,function(c){return c.value;});
+  var modo=document.querySelector('#copiarModo input:checked').value; // 'texto' | 'ambos' | 'dados'
   var src=dados[curMes];
   var promises=[];
-  checks.forEach(function(c){
-    var m=parseInt(c.value);
-    dados[m]=JSON.parse(JSON.stringify(src));
-    dados[m].meta={valor:src.meta&&src.meta.valor?src.meta.valor:0,descricao:''};
+
+  monthChecks.forEach(function(mc){
+    var m=parseInt(mc.value);
+    if(!dados[m]) dados[m]={entradas:[],fixa:[],variavel:[],outros:[],investimentos:[],div:null,meta:{valor:0,descricao:''}};
+
+    COPY_CATS.forEach(function(c){
+      if(selectedCats.indexOf(c.key)===-1) return;
+      var srcArr=src[c.field]||[];
+      var destArr=dados[m][c.field]||[];
+
+      if(modo==='ambos'){
+        dados[m][c.field]=JSON.parse(JSON.stringify(srcArr));
+      }else if(modo==='texto'){
+        dados[m][c.field]=srcArr.map(function(item){
+          var clone=JSON.parse(JSON.stringify(item));
+          clone.valor=0;
+          return clone;
+        });
+      }else if(modo==='dados'){
+        dados[m][c.field]=destArr.map(function(destItem,i){
+          var clone=JSON.parse(JSON.stringify(destItem));
+          if(srcArr[i]) clone.valor=srcArr[i].valor||0;
+          return clone;
+        });
+      }
+    });
+
     promises.push(_sb.from('monthly_data').upsert({
       user_id:_user.id,ano:curAno,mes:m,
       entradas:dados[m].entradas,fixa:dados[m].fixa,variavel:dados[m].variavel,
@@ -1320,9 +1534,10 @@ async function executarCopia(){
       updated_at:new Date().toISOString()
     },{onConflict:'user_id,ano,mes'}));
   });
+
   await Promise.all(promises);
   document.getElementById('copiarModal').classList.add('hidden');
-  showToast('Copiado para '+checks.length+' mês(es)!');
+  showToast('Copiado para '+monthChecks.length+' mês(es)!');
   renderAll();
 }
 
