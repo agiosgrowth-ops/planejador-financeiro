@@ -570,8 +570,8 @@ input,button,select,textarea{font-family:inherit}
 // ═══════════════════════════════════════════
 //  CONSTANTS
 // ═══════════════════════════════════════════
-var SUPA_URL='https://yafhytknozluifgdjdqs.supabase.co';
-var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlhZmh5dGtub3psdWlmZ2RqZHFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3MzU3OTUsImV4cCI6MjEwNDMxMTc5NX0.b80XBwtP8AIQCC9UIJLfJ3wwz_5HRHZciDY2-J2R7gk';
+var SUPA_URL='https://ytpltanlmnphzdzbmsii.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl0cGx0YW5sbW5waHpkemJtc2lpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM5MzE5MjQsImV4cCI6MjEwOTUwNzkyNH0.mjsaAWpierXEsopap8ALs4Ked5E4iC-Kkzcf_13PS_s';
 var MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 var MESES_SHORT=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
@@ -667,7 +667,7 @@ async function fazerAuth(){
 async function recuperarSenha(){
   var email=(document.getElementById('authEmail').value||'').trim();
   if(!email){showAuthErr('Digite seu e-mail acima para recuperar a senha.');return;}
-  var res=await _sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.href.split('#')[0]});
+  var res=await _sb.auth.resetPasswordForEmail(email,{redirectTo:'https://agiosgrowth-ops.github.io/planejador-financeiro/'});
   if(res.error){showAuthErr(traduzErr(res.error.message));return;}
   showToast('Link de recuperação enviado para '+email);
 }
