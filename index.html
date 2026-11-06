@@ -652,7 +652,7 @@ async function fazerAuth(){
     var c=document.getElementById('authPwConfirm').value||'';
     if(pw!==c){showAuthErr('Senhas não coincidem.');return;}
     if(pw.length<6){showAuthErr('Senha deve ter ao menos 6 caracteres.');return;}
-    var r=await _sb.auth.signUp({email:email,password:pw});
+    var r=await _sb.auth.signUp({email:email,password:pw,options:{emailRedirectTo:'https://agiosgrowth-ops.github.io/planejador-financeiro/'}});
     if(r.error){showAuthErr(traduzErr(r.error.message));return;}
     showToast('Conta criada! Verifique seu e-mail para confirmar.');
     setAuthMode('login');
