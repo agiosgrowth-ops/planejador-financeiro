@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" translate="no">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="google" content="notranslate">
 <title>Planejador Financeiro</title>
 <link rel="stylesheet" href="https://unpkg.com/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1289,11 +1290,11 @@ function renderInvestimentos(){
   h+='<div class="tbl" id="tblInv">';
   filtered.forEach(function(item){
     h+='<div class="tbl-row-5" id="row_'+item.id+'">';
-    h+='<input class="ti" value="'+escHtml(item.nome||'')+'" placeholder="Investimento" data-id="'+item.id+'" data-f="nome" data-t="inv" oninput="onItemChange(this)">';
-    h+='<input class="ti" value="'+escHtml(item.local||'')+'" placeholder="Corretora/banco" data-id="'+item.id+'" data-f="local" data-t="inv" oninput="onItemChange(this)">';
-    h+='<input class="ti inv-obs" value="'+escHtml(item.obs||'')+'" placeholder="Obs." data-id="'+item.id+'" data-f="obs" data-t="inv" oninput="onItemChange(this)">';
-    h+='<input class="tv" type="number" value="'+fmtRaw(item.valor)+'" min="0" step="0.01" data-id="'+item.id+'" data-f="valor" data-t="inv" oninput="onItemChange(this)">';
-    h+='<button class="del-btn" onclick="delItem(\'inv\',\''+item.id+'\')"><i class="ti ti-trash"></i></button>';
+    h+='<input class="ti" value="'+escHtml(item.nome||'')+'" placeholder="Investimento" data-id="'+item.id+'" data-f="nome" data-t="investimentos" oninput="onItemChange(this)">';
+    h+='<input class="ti" value="'+escHtml(item.local||'')+'" placeholder="Corretora/banco" data-id="'+item.id+'" data-f="local" data-t="investimentos" oninput="onItemChange(this)">';
+    h+='<input class="ti inv-obs" value="'+escHtml(item.obs||'')+'" placeholder="Obs." data-id="'+item.id+'" data-f="obs" data-t="investimentos" oninput="onItemChange(this)">';
+    h+='<input class="tv" type="number" value="'+fmtRaw(item.valor)+'" min="0" step="0.01" data-id="'+item.id+'" data-f="valor" data-t="investimentos" oninput="onItemChange(this)">';
+    h+='<button class="del-btn" onclick="delItem(\'investimentos\',\''+item.id+'\')"><i class="ti ti-trash"></i></button>';
     h+='</div>';
   });
   h+='</div>';
