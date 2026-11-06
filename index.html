@@ -1222,7 +1222,7 @@ function renderEntradas(){
   h+='<div class="total-row"><span class="total-label">Total de entradas</span><span class="total-val" style="color:#a3e06a">'+fmtR(total)+'</span></div>';
   h+='</div>';
   document.getElementById('pageWrap').innerHTML=h;
-  document.getElementById('filtroEnt').focus();
+  focarFimInput('filtroEnt');
 }
 
 // ═══════════════════════════════════════════
@@ -1259,7 +1259,7 @@ function renderSaidas(){
   h+='<div class="total-row" style="border-top:none;margin-top:4px"><span class="total-label">Total geral de saídas</span><span class="total-val" style="color:#f08080">'+fmtR(totalGeral)+'</span></div>';
   h+='</div>';
   document.getElementById('pageWrap').innerHTML=h;
-  document.getElementById('filtroSai').focus();
+  focarFimInput('filtroSai');
 }
 
 function setCatSaida(c){
@@ -1301,7 +1301,7 @@ function renderInvestimentos(){
   h+='<div class="total-row"><span class="total-label">Total investido</span><span class="total-val" style="color:#c4b5ff">'+fmtR(total)+'</span></div>';
   h+='</div>';
   document.getElementById('pageWrap').innerHTML=h;
-  document.getElementById('filtroInv').focus();
+  focarFimInput('filtroInv');
 }
 
 // ═══════════════════════════════════════════
@@ -1451,6 +1451,14 @@ function setFiltro(v){
   if(curNav==='entradas') renderEntradas();
   else if(curNav==='saidas') renderSaidas();
   else if(curNav==='investimentos') renderInvestimentos();
+}
+
+function focarFimInput(id){
+  var el=document.getElementById(id);
+  if(!el) return;
+  el.focus();
+  var n=el.value.length;
+  try{ el.setSelectionRange(n,n); }catch(e){}
 }
 
 // ═══════════════════════════════════════════
