@@ -474,6 +474,7 @@ input,button,select,textarea{font-family:inherit}
     </div>
     <div class="topbar-actions">
       <div class="icon-btn" onclick="abrirCopiar()" title="Copiar mês"><i class="ti ti-copy"></i></div>
+      <div class="icon-btn" onclick="abrirPeriodo()" title="Relatório por período"><i class="ti ti-calendar-stats"></i></div>
       <div class="icon-btn" onclick="document.getElementById('settingsModal').classList.remove('hidden')" title="Ferramentas"><i class="ti ti-settings"></i></div>
     </div>
   </div>
@@ -604,6 +605,29 @@ input,button,select,textarea{font-family:inherit}
     <div style="display:flex;gap:8px">
       <button class="btn-ghost" style="flex:1;margin-top:0" onclick="cancelDelItem()">Cancelar</button>
       <button class="btn-danger" style="flex:1;margin-top:0" onclick="confirmDelItem()"><i class="ti ti-trash"></i> Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Period report modal -->
+<div class="modal-overlay hidden" id="periodoModal">
+  <div class="modal-box">
+    <div class="modal-title"><i class="ti ti-calendar-stats"></i> Relatório por período</div>
+    <div class="modal-sub">Escolha o intervalo de meses para gerar o PDF do relatório.</div>
+    <div class="modal-section-label">De</div>
+    <div style="display:flex;gap:8px">
+      <select class="fi2" id="periodoMesIni"></select>
+      <input class="fi2" id="periodoAnoIni" type="number" style="max-width:110px" placeholder="Ano">
+    </div>
+    <div class="modal-section-label">Até</div>
+    <div style="display:flex;gap:8px">
+      <select class="fi2" id="periodoMesFim"></select>
+      <input class="fi2" id="periodoAnoFim" type="number" style="max-width:110px" placeholder="Ano">
+    </div>
+    <div id="periodoErro" style="color:#e05252;font-size:12px;margin-top:8px;display:none"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn-ghost" style="flex:1;margin-top:0" onclick="document.getElementById('periodoModal').classList.add('hidden')">Cancelar</button>
+      <button class="btn-primary" style="flex:1;margin-top:0" onclick="gerarRelatorioPeriodo()"><i class="ti ti-file-type-pdf"></i> Gerar PDF</button>
     </div>
   </div>
 </div>
@@ -1222,7 +1246,7 @@ function renderEntradas(){
   h+='<button class="btn-add" onclick="addItem(\'e\')"><i class="ti ti-plus"></i> Adicionar</button>';
   h+='</div></div>';
   h+=tblItens(filtered,'e','#a3e06a');
-  h+='<div class="total-row"><span class="total-label">Total de entradas</span><span class="total-val" style="color:#a3e06a">'+fmtR(total)+'</span></div>';
+  h+='<div class="total-row"><span class="total-label">Total de entradas</span><span class="total-val" id="totalEntVal" style="color:#a3e06a">'+fmtR(total)+'</span></div>';
   h+='</div>';
   document.getElementById('pageWrap').innerHTML=h;
   focarFimInput('filtroEnt');
@@ -1259,8 +1283,8 @@ function renderSaidas(){
   });
   h+='</div>';
   h+=tblItens(filtered,cat,catMap[cat].color);
-  h+='<div class="total-row"><span class="total-label">'+catMap[cat].label+'</span><span class="total-val" style="color:'+catMap[cat].color+'">'+fmtR(total)+'</span></div>';
-  h+='<div class="total-row" style="border-top:none;margin-top:4px"><span class="total-label">Total geral de saídas</span><span class="total-val" style="color:#f08080">'+fmtR(totalGeral)+'</span></div>';
+  h+='<div class="total-row"><span class="total-label">'+catMap[cat].label+'</span><span class="total-val" id="totalCatVal" style="color:'+catMap[cat].color+'">'+fmtR(total)+'</span></div>';
+  h+='<div class="total-row" style="border-top:none;margin-top:4px"><span class="total-label">Total geral de saídas</span><span class="total-val" id="totalGeralVal" style="color:#f08080">'+fmtR(totalGeral)+'</span></div>';
   h+='</div>';
   document.getElementById('pageWrap').innerHTML=h;
   focarFimInput('filtroSai');
@@ -1303,7 +1327,7 @@ function renderInvestimentos(){
     h+='</div>';
   });
   h+='</div>';
-  h+='<div class="total-row"><span class="total-label">Total investido</span><span class="total-val" style="color:#c4b5ff">'+fmtR(total)+'</span></div>';
+  h+='<div class="total-row"><span class="total-label">Total investido</span><span class="total-val" id="totalInvVal" style="color:#c4b5ff">'+fmtR(total)+'</span></div>';
   h+='</div>';
   document.getElementById('pageWrap').innerHTML=h;
   focarFimInput('filtroInv');
@@ -1486,6 +1510,75 @@ function exportarAnualPDF(){
 }
 
 // ═══════════════════════════════════════════
+//  RELATÓRIO POR PERÍODO (intervalo de meses)
+// ═══════════════════════════════════════════
+function abrirPeriodo(){
+  var selIni=document.getElementById('periodoMesIni');
+  var selFim=document.getElementById('periodoMesFim');
+  selIni.innerHTML=MESES.map(function(m,i){return '<option value="'+i+'">'+m+'</option>';}).join('');
+  selFim.innerHTML=MESES.map(function(m,i){return '<option value="'+i+'">'+m+'</option>';}).join('');
+  selIni.value=curMes;
+  selFim.value=curMes;
+  document.getElementById('periodoAnoIni').value=curAno;
+  document.getElementById('periodoAnoFim').value=curAno;
+  document.getElementById('periodoErro').style.display='none';
+  document.getElementById('periodoModal').classList.remove('hidden');
+}
+
+async function gerarRelatorioPeriodo(){
+  var mesIni=parseInt(document.getElementById('periodoMesIni').value,10);
+  var anoIni=parseInt(document.getElementById('periodoAnoIni').value,10);
+  var mesFim=parseInt(document.getElementById('periodoMesFim').value,10);
+  var anoFim=parseInt(document.getElementById('periodoAnoFim').value,10);
+  var errEl=document.getElementById('periodoErro');
+  var inicio=anoIni*12+mesIni, fim=anoFim*12+mesFim;
+  if(!anoIni||!anoFim||inicio>fim){
+    errEl.textContent='A data final precisa ser igual ou depois da data inicial.';
+    errEl.style.display='block';
+    return;
+  }
+  if(fim-inicio>60){
+    errEl.textContent='Selecione um período de até 5 anos.';
+    errEl.style.display='block';
+    return;
+  }
+  errEl.style.display='none';
+
+  var cache={};
+  cache[curAno]=dados;
+  var linhas=[];
+  var totE=0,totG=0,totI=0;
+  for(var k=inicio;k<=fim;k++){
+    var ano=Math.floor(k/12), mes=k%12;
+    if(!cache[ano]) cache[ano]=await carregarAno(ano);
+    var d=cache[ano][mes]||mesVazio();
+    var e=somaArr(d.entradas);
+    var g=somaArr(d.fixa)+somaArr(d.variavel)+somaArr(d.outros);
+    var i=somaArr(d.investimentos);
+    var sld=e-g-i;
+    totE+=e;totG+=g;totI+=i;
+    linhas.push([MESES_SHORT[mes]+'/'+ano,fmtR(e),fmtR(g),fmtR(i),fmtR(sld)]);
+  }
+  var totS=totE-totG-totI;
+
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF();
+  var tituloPeriodo=MESES[mesIni]+'/'+anoIni+' a '+MESES[mesFim]+'/'+anoFim;
+  pdfHeader(doc,'Relatório — '+tituloPeriodo);
+  doc.autoTable({
+    startY:90,
+    head:[['Mês','Entradas','Gastos','Investido','Saldo']],
+    body:linhas,
+    foot:[['Total',fmtR(totE),fmtR(totG),fmtR(totI),fmtR(totS)]],
+    headStyles:{fillColor:[77,158,245],textColor:[255,255,255]},
+    footStyles:{fillColor:[235,235,235],textColor:[20,20,20],fontStyle:'bold'},
+    columnStyles:{1:{halign:'right'},2:{halign:'right'},3:{halign:'right'},4:{halign:'right'}}
+  });
+  doc.save('relatorio-'+slugArquivo(tituloPeriodo)+'.pdf');
+  document.getElementById('periodoModal').classList.add('hidden');
+}
+
+// ═══════════════════════════════════════════
 //  GENERIC TABLE RENDER
 // ═══════════════════════════════════════════
 function tblItens(items,tipo,color){
@@ -1550,7 +1643,24 @@ function onItemChange(el){
   if(!item) return;
   item[f]=f==='valor'?parseFloat(el.value)||0:el.value;
   renderTopChips();
+  atualizarTotaisAba();
   agendarSalvar();
+}
+
+function atualizarTotaisAba(){
+  var d=dados[curMes];
+  if(curNav==='entradas'){
+    var elEnt=document.getElementById('totalEntVal');
+    if(elEnt) elEnt.textContent=fmtR(somaArr(d.entradas));
+  }else if(curNav==='saidas'){
+    var elCat=document.getElementById('totalCatVal');
+    if(elCat) elCat.textContent=fmtR(somaArr(d[curSaidaTab]||[]));
+    var elGeral=document.getElementById('totalGeralVal');
+    if(elGeral) elGeral.textContent=fmtR(somaArr(d.fixa)+somaArr(d.variavel)+somaArr(d.outros));
+  }else if(curNav==='investimentos'){
+    var elInv=document.getElementById('totalInvVal');
+    if(elInv) elInv.textContent=fmtR(somaArr(d.investimentos));
+  }
 }
 
 function salvarCamposAtivos(){
