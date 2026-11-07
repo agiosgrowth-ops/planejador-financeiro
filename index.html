@@ -44,7 +44,7 @@
    BASE RESET & LAYOUT
 ═══════════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;transition:background .2s,color .2s}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;transition:background .2s,color .2s;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
 .hidden{display:none!important}
 input,button,select,textarea{font-family:inherit}
 
@@ -141,8 +141,8 @@ input,button,select,textarea{font-family:inherit}
 .page-wrap{flex:1;padding:14px;max-width:900px;width:100%;margin:0 auto}
 
 /* Cards */
-.card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px;margin-bottom:12px}
-.card-title{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--txt)}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.card-title{font-size:14px;font-weight:600;margin-bottom:14px;color:var(--txt);letter-spacing:.01em}
 .row-actions{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
 .row-actions-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt2)}
@@ -172,7 +172,7 @@ input,button,select,textarea{font-family:inherit}
 .del-btn:hover{color:#e05252}
 .total-row{display:flex;justify-content:space-between;padding:8px 4px 0;border-top:1px solid var(--bdr);margin-top:4px}
 .total-label{font-size:12px;color:var(--txt2)}
-.total-val{font-size:14px;font-weight:700}
+.total-val{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
 
 /* Category tabs (saídas) */
 .cat-tabs{display:flex;gap:18px;margin-bottom:16px;border-bottom:1px solid var(--bdr);padding-bottom:0}
@@ -183,13 +183,11 @@ input,button,select,textarea{font-family:inherit}
 
 /* Painel */
 .painel-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.stat-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px}
-.stat-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.stat-body{min-width:0}
-.stat-label{font-size:11px;color:var(--txt2);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
-.stat-val{font-size:22px;font-weight:700}
+.stat-card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:16px 18px;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.stat-label{font-size:13px;color:var(--txt2);margin-bottom:6px;font-weight:500;letter-spacing:.01em}
+.stat-val{font-size:26px;font-weight:800;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
 .stat-sub{font-size:11px;color:var(--txt2);margin-top:4px}
-.chart-wrap{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px;margin-bottom:12px}
+.chart-wrap{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.12)}
 .chart-wrap canvas{max-height:220px}
 .legend-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .leg-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2)}
@@ -321,7 +319,7 @@ input,button,select,textarea{font-family:inherit}
 
   .painel-grid{grid-template-columns:1fr}
   .divisao-grid{grid-template-columns:1fr 1fr}
-  .stat-val{font-size:20px}
+  .stat-val{font-size:22px}
 
   .row-actions{flex-direction:column;align-items:flex-start;gap:6px}
   .row-actions-left{width:100%}
@@ -385,7 +383,7 @@ input,button,select,textarea{font-family:inherit}
   .page-wrap{max-width:960px;padding:20px 32px}
   .painel-grid{grid-template-columns:1fr 1fr}
   .divisao-grid{grid-template-columns:repeat(3,1fr)}
-  .stat-val{font-size:24px}
+  .stat-val{font-size:28px}
   .modal-box{max-width:460px}
 }
 </style>
@@ -1143,10 +1141,10 @@ function renderPainel(){
   var h='<div class="chart-wrap">';
   h+='<div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--txt2)">'+mesNome+'</div>';
   h+='<div class="painel-grid" style="margin-bottom:12px">';
-  h+=statCard('Entradas',fmtR(entTotal),'#a3e06a','ti-arrow-up-right');
-  h+=statCard('Gastos Totais',fmtR(gasTotal),'#f08080','ti-arrow-down-right');
-  h+=statCard('Investimentos',fmtR(inv),'#c4b5ff','ti-chart-line');
-  h+=statCard('Saldo',fmtR(saldo),saldo>=0?'#a3e06a':'#e05252','ti-wallet');
+  h+=statCard('Entradas',fmtR(entTotal),'#a3e06a');
+  h+=statCard('Gastos',fmtR(gasTotal),'#f08080');
+  h+=statCard('Saldo',fmtR(saldo),saldo>=0?'#a3e06a':'#e05252');
+  h+=statCard('Investimentos',fmtR(inv),'#c4b5ff');
   h+='</div>';
 
   // Pie chart
@@ -1204,9 +1202,8 @@ function renderPainel(){
   }
 }
 
-function statCard(label,val,color,icon){
-  var ic=icon||'ti-chart-bar';
-  return '<div class="stat-card"><div class="stat-icon" style="background:'+color+'22;color:'+color+'"><i class="ti '+ic+'"></i></div><div class="stat-body"><div class="stat-label">'+label+'</div><div class="stat-val" style="color:'+color+'">'+val+'</div></div></div>';
+function statCard(label,val,color){
+  return '<div class="stat-card"><div class="stat-label">'+label+'</div><div class="stat-val" style="color:'+color+'">'+val+'</div></div>';
 }
 
 function divCell(nome,val,pct,banco,color){
