@@ -13,6 +13,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════
    THEMES — CSS Custom Properties
@@ -163,8 +165,8 @@ input,button,select,textarea{font-family:inherit}
 .tbl-h{font-size:11px;color:var(--txt3);font-weight:500}
 .tbl-row{display:grid;grid-template-columns:1fr 150px 120px 34px;gap:8px;background:var(--inp);border-radius:8px;padding:6px 8px;align-items:center}
 .tbl-row-5{display:grid;grid-template-columns:1fr 110px 110px 110px 34px;gap:8px;background:var(--inp);border-radius:8px;padding:6px 8px;align-items:center}
-.ti{background:transparent;border:none;color:var(--txt);font-size:13px;width:100%;outline:none}
-.ti::placeholder{color:var(--txt3)}
+.txtin{background:transparent;border:none;color:var(--txt);font-size:13px;width:100%;outline:none;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.txtin::placeholder{color:var(--txt3)}
 .tv{background:transparent;border:none;color:var(--txt);font-size:13px;width:100%;outline:none;text-align:right}
 .del-btn{background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px;padding:2px;transition:color .15s;line-height:1}
 .del-btn:hover{color:#e05252}
@@ -1216,6 +1218,7 @@ function renderEntradas(){
   h+='</div>';
   h+='<div style="display:flex;gap:6px">';
   h+='<button class="btn-import" onclick="abrirExtrato(\'e\')"><i class="ti ti-file-import"></i> Importar CSV</button>';
+  h+='<button class="btn-import" onclick="exportarEntradasPDF()"><i class="ti ti-file-type-pdf"></i> PDF</button>';
   h+='<button class="btn-add" onclick="addItem(\'e\')"><i class="ti ti-plus"></i> Adicionar</button>';
   h+='</div></div>';
   h+=tblItens(filtered,'e','#a3e06a');
@@ -1247,6 +1250,7 @@ function renderSaidas(){
   h+='</div>';
   h+='<div style="display:flex;gap:6px">';
   h+='<button class="btn-import" onclick="abrirExtrato(\''+cat+'\')"><i class="ti ti-file-import"></i> Importar CSV</button>';
+  h+='<button class="btn-import" onclick="exportarSaidasPDF()"><i class="ti ti-file-type-pdf"></i> PDF</button>';
   h+='<button class="btn-add" onclick="addItem(\''+cat+'\')"><i class="ti ti-plus"></i> Adicionar</button>';
   h+='</div></div>';
   h+='<div class="cat-tabs">';
@@ -1284,15 +1288,16 @@ function renderInvestimentos(){
   h+='</div>';
   h+='<div style="display:flex;gap:6px">';
   h+='<button class="btn-import" onclick="abrirExtrato(\'investimentos\')"><i class="ti ti-file-import"></i> Importar CSV</button>';
+  h+='<button class="btn-import" onclick="exportarInvestimentosPDF()"><i class="ti ti-file-type-pdf"></i> PDF</button>';
   h+='<button class="btn-add" onclick="addItem(\'inv\')"><i class="ti ti-plus"></i> Adicionar</button>';
   h+='</div></div>';
   h+='<div class="tbl-head-5"><span class="tbl-h">Descrição</span><span class="tbl-h">Onde</span><span class="tbl-h">Observação</span><span class="tbl-h num">Valor</span><span></span></div>';
   h+='<div class="tbl" id="tblInv">';
   filtered.forEach(function(item){
     h+='<div class="tbl-row-5" id="row_'+item.id+'">';
-    h+='<input class="ti" value="'+escHtml(item.nome||'')+'" placeholder="Investimento" data-id="'+item.id+'" data-f="nome" data-t="investimentos" oninput="onItemChange(this)">';
-    h+='<input class="ti" value="'+escHtml(item.local||'')+'" placeholder="Corretora/banco" data-id="'+item.id+'" data-f="local" data-t="investimentos" oninput="onItemChange(this)">';
-    h+='<input class="ti inv-obs" value="'+escHtml(item.obs||'')+'" placeholder="Obs." data-id="'+item.id+'" data-f="obs" data-t="investimentos" oninput="onItemChange(this)">';
+    h+='<input class="txtin" value="'+escHtml(item.nome||'')+'" placeholder="Investimento" data-id="'+item.id+'" data-f="nome" data-t="investimentos" oninput="onItemChange(this)">';
+    h+='<input class="txtin" value="'+escHtml(item.local||'')+'" placeholder="Corretora/banco" data-id="'+item.id+'" data-f="local" data-t="investimentos" oninput="onItemChange(this)">';
+    h+='<input class="txtin inv-obs" value="'+escHtml(item.obs||'')+'" placeholder="Obs." data-id="'+item.id+'" data-f="obs" data-t="investimentos" oninput="onItemChange(this)">';
     h+='<input class="tv" type="number" value="'+fmtRaw(item.valor)+'" min="0" step="0.01" data-id="'+item.id+'" data-f="valor" data-t="investimentos" oninput="onItemChange(this)">';
     h+='<button class="del-btn" onclick="delItem(\'investimentos\',\''+item.id+'\')"><i class="ti ti-trash"></i></button>';
     h+='</div>';
@@ -1323,6 +1328,7 @@ async function renderAnual(){
     var i=somaArr(d.investimentos);
     entArr.push(e);gasArr.push(g);invArr.push(i);sldArr.push(e-g-i);
   }
+  window._anoPDFData={ano:curAnoNav,entArr:entArr,gasArr:gasArr,invArr:invArr,sldArr:sldArr};
 
   var h='<div class="card">';
   h+='<div class="ano-nav">';
@@ -1343,7 +1349,10 @@ async function renderAnual(){
   var totI=invArr.reduce(function(a,b){return a+b;},0);
   var totS=totE-totG-totI;
   h+='<tr style="font-weight:700;border-top:2px solid var(--bdr2)"><td>Total</td><td class="num" style="color:#a3e06a">'+fmtR(totE)+'</td><td class="num" style="color:#f08080">'+fmtR(totG)+'</td><td class="num" style="color:#c4b5ff">'+fmtR(totI)+'</td><td class="num" style="color:'+(totS>=0?'#a3e06a':'#e05252')+'">'+fmtR(totS)+'</td></tr>';
-  h+='</tbody></table></div></div>';
+  h+='</tbody></table></div>';
+  h+='<div style="display:flex;justify-content:flex-end;margin-top:14px">';
+  h+='<button class="btn-import" onclick="exportarAnualPDF()"><i class="ti ti-file-type-pdf"></i> Exportar PDF anual</button>';
+  h+='</div></div>';
   document.getElementById('pageWrap').innerHTML=h;
 
   if(anoChart){anoChart.destroy();}
@@ -1366,6 +1375,117 @@ function prevAnoNav(){if(anoChart){anoChart.destroy();anoChart=null;}curAnoNav--
 function nextAnoNav(){if(anoChart){anoChart.destroy();anoChart=null;}curAnoNav++;renderAnual();}
 
 // ═══════════════════════════════════════════
+//  EXPORTAÇÃO EM PDF
+// ═══════════════════════════════════════════
+function pdfHeader(doc,titulo){
+  doc.setFontSize(16);
+  doc.setTextColor(40,40,40);
+  doc.text('Planejador Financeiro',40,40);
+  doc.setFontSize(12);
+  doc.setTextColor(90,90,90);
+  doc.text(titulo,40,60);
+  if(perfil&&perfil.nome){
+    doc.setFontSize(9);
+    doc.setTextColor(140,140,140);
+    doc.text(String(perfil.nome),40,76);
+  }
+}
+
+function slugArquivo(s){
+  return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+}
+
+function exportarEntradasPDF(){
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF();
+  var d=dados[curMes];
+  var items=d.entradas||[];
+  pdfHeader(doc,'Entradas — '+MESES[curMes]+'/'+curAno);
+  var rows=items.map(function(it){return [it.nome||'',it.obs||'',fmtR(it.valor)];});
+  doc.autoTable({
+    startY:90,
+    head:[['Descrição','Observação','Valor']],
+    body:rows,
+    foot:[['Total','',fmtR(somaArr(items))]],
+    headStyles:{fillColor:[163,224,106],textColor:[20,20,20]},
+    footStyles:{fillColor:[235,235,235],textColor:[20,20,20],fontStyle:'bold'},
+    columnStyles:{2:{halign:'right'}}
+  });
+  doc.save('entradas-'+slugArquivo(MESES[curMes])+'-'+curAno+'.pdf');
+}
+
+function exportarSaidasPDF(){
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF();
+  var d=dados[curMes];
+  pdfHeader(doc,'Saídas — '+MESES[curMes]+'/'+curAno);
+  var catMap=[{key:'fixa',label:'Contas fixas'},{key:'variavel',label:'Contas variáveis'},{key:'outros',label:'Outros gastos'}];
+  var rows=[];
+  catMap.forEach(function(c){
+    (d[c.key]||[]).forEach(function(it){
+      rows.push([c.label,it.nome||'',it.obs||'',fmtR(it.valor)]);
+    });
+  });
+  var total=somaArr(d.fixa)+somaArr(d.variavel)+somaArr(d.outros);
+  doc.autoTable({
+    startY:90,
+    head:[['Categoria','Descrição','Observação','Valor']],
+    body:rows,
+    foot:[['Total','','',fmtR(total)]],
+    headStyles:{fillColor:[240,128,128],textColor:[20,20,20]},
+    footStyles:{fillColor:[235,235,235],textColor:[20,20,20],fontStyle:'bold'},
+    columnStyles:{3:{halign:'right'}}
+  });
+  doc.save('saidas-'+slugArquivo(MESES[curMes])+'-'+curAno+'.pdf');
+}
+
+function exportarInvestimentosPDF(){
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF();
+  var d=dados[curMes];
+  var items=d.investimentos||[];
+  pdfHeader(doc,'Investimentos — '+MESES[curMes]+'/'+curAno);
+  var rows=items.map(function(it){return [it.nome||'',it.local||'',it.obs||'',fmtR(it.valor)];});
+  doc.autoTable({
+    startY:90,
+    head:[['Investimento','Onde','Observação','Valor']],
+    body:rows,
+    foot:[['Total','','',fmtR(somaArr(items))]],
+    headStyles:{fillColor:[196,181,255],textColor:[20,20,20]},
+    footStyles:{fillColor:[235,235,235],textColor:[20,20,20],fontStyle:'bold'},
+    columnStyles:{3:{halign:'right'}}
+  });
+  doc.save('investimentos-'+slugArquivo(MESES[curMes])+'-'+curAno+'.pdf');
+}
+
+function exportarAnualPDF(){
+  var dadosPdf=window._anoPDFData;
+  if(!dadosPdf){ return; }
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF();
+  pdfHeader(doc,'Resumo Anual — '+dadosPdf.ano);
+  var rows=[];
+  for(var m=0;m<12;m++){
+    var sld=dadosPdf.sldArr[m];
+    rows.push([MESES_SHORT[m],fmtR(dadosPdf.entArr[m]),fmtR(dadosPdf.gasArr[m]),fmtR(dadosPdf.invArr[m]),fmtR(sld)]);
+  }
+  var totE=dadosPdf.entArr.reduce(function(a,b){return a+b;},0);
+  var totG=dadosPdf.gasArr.reduce(function(a,b){return a+b;},0);
+  var totI=dadosPdf.invArr.reduce(function(a,b){return a+b;},0);
+  var totS=totE-totG-totI;
+  doc.autoTable({
+    startY:90,
+    head:[['Mês','Entradas','Gastos','Investido','Saldo']],
+    body:rows,
+    foot:[['Total',fmtR(totE),fmtR(totG),fmtR(totI),fmtR(totS)]],
+    headStyles:{fillColor:[77,158,245],textColor:[255,255,255]},
+    footStyles:{fillColor:[235,235,235],textColor:[20,20,20],fontStyle:'bold'},
+    columnStyles:{1:{halign:'right'},2:{halign:'right'},3:{halign:'right'},4:{halign:'right'}}
+  });
+  doc.save('resumo-anual-'+dadosPdf.ano+'.pdf');
+}
+
+// ═══════════════════════════════════════════
 //  GENERIC TABLE RENDER
 // ═══════════════════════════════════════════
 function tblItens(items,tipo,color){
@@ -1375,8 +1495,8 @@ function tblItens(items,tipo,color){
   h+='<div class="tbl" id="tbl_'+tipo+'">';
   items.forEach(function(item){
     h+='<div class="tbl-row" id="row_'+item.id+'">';
-    h+='<input class="ti" value="'+escHtml(item.nome||'')+'" placeholder="Descrição" data-id="'+item.id+'" data-f="nome" data-t="'+catKey+'" oninput="onItemChange(this)">';
-    h+='<input class="ti" value="'+escHtml(item.obs||'')+'" placeholder="Obs." data-id="'+item.id+'" data-f="obs" data-t="'+catKey+'" oninput="onItemChange(this)">';
+    h+='<input class="txtin" value="'+escHtml(item.nome||'')+'" placeholder="Descrição" data-id="'+item.id+'" data-f="nome" data-t="'+catKey+'" oninput="onItemChange(this)">';
+    h+='<input class="txtin" value="'+escHtml(item.obs||'')+'" placeholder="Obs." data-id="'+item.id+'" data-f="obs" data-t="'+catKey+'" oninput="onItemChange(this)">';
     h+='<input class="tv" type="number" value="'+fmtRaw(item.valor)+'" min="0" step="0.01" data-id="'+item.id+'" data-f="valor" data-t="'+catKey+'" oninput="onItemChange(this)">';
     h+='<button class="del-btn" onclick="delItem(\''+catKey+'\',\''+item.id+'\')"><i class="ti ti-trash"></i></button>';
     h+='</div>';
